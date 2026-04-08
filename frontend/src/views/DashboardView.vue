@@ -18,26 +18,9 @@
       <DevTeamSection />
 
       <!-- ═══════════════════════════════════════
-           3. 영상팀 (Video Team)
+           3. 영상마케팅팀 (Video Mkt Team) - Harness Engineering
            ═══════════════════════════════════════ -->
-      <div v-if="vidReady" class="section-container">
-        <h2 class="section-title">Video Team Meta (영상팀)</h2>
-        <div class="row q-col-gutter-lg">
-          <div class="col-12 col-md-8">
-            <q-card class="glass-card q-pa-md">
-              <div class="text-h6 q-mb-sm text-weight-bold">유튜브 채널 성장 추이</div>
-              <apexchart type="line" height="350" :options="vOpts" :series="vSers" />
-            </q-card>
-          </div>
-          <div class="col-12 col-md-4 column q-gutter-y-md">
-            <KpiSummaryCard title="상담문의" :value="vidK1" unit="건" color="neon" :progress="0.65" />
-            <KpiSummaryCard title="구독자" :value="vidK2" unit="명" color="warning" :progress="0.75" />
-            <q-card class="glass-card q-pa-md col-grow">
-              <GrowthItems title="영상 메트릭" :metrics="mxV" color="primary" show-mom />
-            </q-card>
-          </div>
-        </div>
-      </div>
+      <VideoTeamSection />
 
       <!-- ═══════════════════════════════════════
            4. 인사팀 (HR Team)
@@ -95,6 +78,7 @@ import KpiSummaryCard from '../components/KpiSummaryCard.vue'
 // 신규 분리된 컴포넌트 임포트
 import SalesTeamSection from '../components/SalesTeamSection.vue'
 import DevTeamSection from '../components/DevTeamSection.vue'
+import VideoTeamSection from '../components/VideoTeamSection.vue'
 
 // ── Global ──────────────────────────────────────
 const allReady = ref(false)
@@ -115,16 +99,6 @@ const baseO = {
   grid: { borderColor: 'rgba(255,255,255,0.1)' },
   xaxis: { categories: timeline }
 }
-
-// ── 3. Video Team ────────────────────────────────
-const vData = ref({ s: [], v: [], c: [] })
-const vidReady = computed(() => vData.value.v.length > 0)
-const initVid = () => { const s=[],v=[],c=[]; for(let i=0;i<24;i++){ s.push(1000+i*50); v.push(50000+i*2000); c.push(200+Math.floor(Math.random()*50)) }; vData.value={s,v,c} }
-const vSers = computed(() => [{ name:'Views', type:'column', data:vData.value.v }, { name:'Subs', type:'line', data:vData.value.s }])
-const vOpts = { ...baseO, colors:['#3F51B5','#E91E63'], yaxis:[{ title:{text:'조회수'} }, { opposite:true, title:{text:'구독자'} }] }
-const vidK1 = computed(() => vData.value.c?.[23] || 0)
-const vidK2 = computed(() => vData.value.s?.[23] || 0)
-const mxV   = computed(() => ['mom','qoq','hoh','yoy'].reduce((a,t) => ({...a, [t]: getGR(vData.value.v, t)}), {}))
 
 // ── 4. HR Team ───────────────────────────────────
 const hData = ref({ h: [], r: [] })
@@ -147,7 +121,7 @@ const accK2 = computed(() => aData.value.p?.[23] || 0)
 const mxA   = computed(() => ['mom','qoq','hoh','yoy'].reduce((a,t) => ({...a, [t]: getGR(aData.value.r, t)}), {}))
 
 onMounted(() => {
-  initVid(); initHr(); initAcc()
+  initHr(); initAcc()
   setTimeout(() => { allReady.value = true }, 150)
 })
 </script>
