@@ -295,20 +295,10 @@ const sOpts = computed(() => {
     stroke: { curve: 'smooth', width: [0, 3, 2] },
     fill:   { opacity: [0.85, 1, 1] },
     plotOptions: { bar: { columnWidth: '55%', borderRadius: 3 } },
-    /* X축: 격월 표시 + 글자 크게 + 둘어쓰기 */
-    /* X축: 3개월 간격 표시 (분기별) + 글자 크게 + 여유 간격 확보 */
-    grid: {
-      ...baseO.grid,
-      padding: { bottom: 85 } /* 회전된 큰 글씨를 위해 하단 공간 대폭 확보 */
-    },
     xaxis: {
       categories: timeline,
-      title: { text: '기간 (Monthly)', style: { color: '#94a3b8', fontSize: '14px', fontWeight: 700 }, offsetY: 75 },
       labels: {
-        rotate: -45,
-        rotateAlways: true,
-        formatter: (val, idx) => (idx % 3 === 0 ? val : ''),
-        style: { fontSize: '14px', colors: '#94a3b8', fontWeight: 700 }
+        style: { fontSize: '11px', colors: '#94a3b8', fontWeight: 600 }
       },
       axisBorder: { show: false },
       axisTicks:  { show: false }

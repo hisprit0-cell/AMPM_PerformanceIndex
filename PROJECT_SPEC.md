@@ -10,6 +10,7 @@
 * **FrontEnd**: Vue.js 2.0 (Options API) & Quasar Framework
 * **BackEnd**: Node.js & Koa.js (RESTful API)
 * **Database**: MariaDB (Relational Data Management)
+* **Database ORM**: Sequelize
 * **DevOps**: Docker, Nginx, Ubuntu 기반 컨테이너화 배포
 
 ---
