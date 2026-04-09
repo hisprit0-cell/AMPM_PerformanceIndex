@@ -66,6 +66,11 @@
         </div>
       </div>
 
+      <!-- ═══════════════════════════════════════
+           6. KPI 파이프라인 (KPI Pipeline) - Harness Engineering
+           ═══════════════════════════════════════ -->
+      <KpiPipelineSection />
+
     </div>
   </q-page>
 </template>
@@ -79,6 +84,7 @@ import KpiSummaryCard from '../components/KpiSummaryCard.vue'
 import SalesTeamSection from '../components/SalesTeamSection.vue'
 import DevTeamSection from '../components/DevTeamSection.vue'
 import VideoTeamSection from '../components/VideoTeamSection.vue'
+import KpiPipelineSection from '../components/KpiPipelineSection.vue'
 
 // ── Global ──────────────────────────────────────
 const allReady = ref(false)
