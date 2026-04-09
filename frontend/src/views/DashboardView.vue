@@ -13,6 +13,11 @@
       <SalesTeamSection />
 
       <!-- ═══════════════════════════════════════
+           1.5. Advertisement Performance (광고 성과) - Harness Engineering
+           ═══════════════════════════════════════ -->
+      <AdPerformanceSection />
+
+      <!-- ═══════════════════════════════════════
            2. 개발팀 (Dev Team) - Harness Engineering
            ═══════════════════════════════════════ -->
       <DevTeamSection />
@@ -67,9 +72,8 @@
       </div>
 
       <!-- ═══════════════════════════════════════
-           6. KPI 파이프라인 (KPI Pipeline) - Harness Engineering
+           (AdPerformanceSection was moved up)
            ═══════════════════════════════════════ -->
-      <KpiPipelineSection />
 
     </div>
   </q-page>
@@ -84,7 +88,7 @@ import KpiSummaryCard from '../components/KpiSummaryCard.vue'
 import SalesTeamSection from '../components/SalesTeamSection.vue'
 import DevTeamSection from '../components/DevTeamSection.vue'
 import VideoTeamSection from '../components/VideoTeamSection.vue'
-import KpiPipelineSection from '../components/KpiPipelineSection.vue'
+import AdPerformanceSection from '../components/AdPerformanceSection.vue'
 
 // ── Global ──────────────────────────────────────
 const allReady = ref(false)

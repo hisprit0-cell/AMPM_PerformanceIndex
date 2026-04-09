@@ -15,3 +15,23 @@ defineProps({
   customClass: String
 })
 </script>
+
+<style scoped>
+.node-box {
+  flex: 0 0 auto;
+  min-width: 150px;
+  background: rgba(20, 25, 40, 0.6);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 12px;
+  padding: 20px 16px;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  transition: transform 0.2s, border-color 0.2s;
+}
+.node-box:hover {
+  transform: translateY(-5px);
+  border-color: rgba(255,255,255,0.4);
+}
+</style>
