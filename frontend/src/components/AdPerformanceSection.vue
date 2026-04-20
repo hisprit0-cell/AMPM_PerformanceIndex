@@ -81,7 +81,7 @@
               {{ tab }}
             </div>
           </div>
-          <div style="flex:1; min-height: 480px;">
+          <div style="flex:1; min-height: 550px;">
             <apexchart type="line" height="100%" :options="cOpts" :series="cSers" :key="'cc-'+curTab" />
           </div>
         </q-card>
@@ -112,7 +112,7 @@
         </q-card>
 
         <!-- 카드 4: 기간별 지표 분석 -->
-        <q-card class="glass-card q-pa-md" style="flex:1 1 0; display:flex; flex-direction:column;">
+        <q-card class="glass-card q-pa-md" style="flex:1 1 auto; display:flex; flex-direction:column; min-height: 280px;">
           <div class="text-subtitle1 text-center q-mb-sm text-grey-2 text-weight-bold" style="letter-spacing:1px;">기간별 광고성과 증감률 분석</div>
           <!-- 컬럼 헤더 -->
           <div class="row q-mb-sm" style="gap:0;">
@@ -153,8 +153,8 @@ import GrowthItems from './GrowthItems.vue'
 
 // Global Time Tools
 const timeline = Array(24).fill(0).map((_, i) => {
-  const m = (i % 12 + 7) % 12 || 12
-  const yr = i < 6 ? '22.' : i < 18 ? '23.' : '24.'
+  const m = ((i + 3) % 12) + 1
+  const yr = i < 9 ? '24.' : i < 21 ? '25.' : '26.'
   return yr + String(m).padStart(2, '0')
 })
 
@@ -253,7 +253,11 @@ const baseO = {
   grid: { borderColor: 'rgba(255,255,255,0.1)' },
   xaxis: { categories: timeline, labels: { style: { fontSize: '10px', colors: '#94a3b8' } }, axisBorder: { show: false }, axisTicks: { show: false } },
   legend: { position: 'bottom', labels: { colors: '#94a3b8' }, fontSize: '12px' },
-  tooltip: { shared: true, intersect: false }
+  tooltip: { 
+    shared: true, 
+    intersect: false,
+    y: { formatter: function (val) { return formatNum(val) } }
+  }
 }
 
 const cSers = computed(() => {
@@ -313,7 +317,7 @@ const cOpts = computed(() => {
     opts.stroke = { curve: 'smooth', width: [0, 0, 4] }
     opts.yaxis = [
       { opposite: true, title: { text: '광고비/매출액', style: { color: '#e879f9' } }, labels: { formatter: v => formatNum(v) } },
-      { opposite: true, show: false }, // Hide the second axis since they share the same scale concept (money)
+      { opposite: true, show: false, labels: { formatter: v => formatNum(v) } }, // Hidden but applies to 2nd series tooltip
       { opposite: false, title: { text: 'ROAS', style: { color: '#00f2ff' } }, labels: { formatter: v => formatNum(v) } }
     ]
   }

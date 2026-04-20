@@ -8,6 +8,7 @@ require('dotenv').config();
 
 const db = require('./lib/db');
 const { authMiddleware, adminMiddleware } = require('./middleware/auth');
+const { SalesData } = require('./models');
 
 const app = new Koa();
 const router = new Router();
@@ -139,6 +140,77 @@ router.post('/api/admin/data/upload', authMiddleware, adminMiddleware, async (ct
 });
 router.get('/api/metrics', async (ctx) => {
   ctx.body = { success: true, data: [] }; // Placeholder for actual data fetch
+});
+
+// --- 📊 영업팀 데이터 API (Sales Data Routes) ---
+
+/**
+ * @route POST /api/sales/upload
+ * @description 영업팀 실적 데이터 일괄 업로드 (UPSERT: 동일 기간+본부+팀이면 덮어쓰기)
+ */
+router.post('/api/sales/upload', async (ctx) => {
+  const { data } = ctx.request.body;
+  if (!data || !Array.isArray(data) || data.length === 0) {
+    return throwError(ctx, 400, 'data 배열이 필요합니다.');
+  }
+
+  try {
+    let upsertCount = 0;
+    for (const row of data) {
+      const { month, division, team, name, revenue, headcount } = row;
+      if (month && division && team) {
+        await SalesData.upsert({
+          month: String(month).trim(),
+          division: String(division).trim(),
+          team: String(team).trim(),
+          name: name ? String(name).trim() : null,
+          revenue: Number(revenue) || 0,
+          headcount: Number(headcount) || 0
+        });
+        upsertCount++;
+      }
+    }
+    ctx.body = { success: true, message: `${upsertCount}건 저장 완료`, count: upsertCount };
+  } catch (err) {
+    throwError(ctx, 500, 'DB 저장 실패: ' + err.message);
+  }
+});
+
+/**
+ * @route GET /api/sales/data
+ * @description 최근 2년간 영업팀 실적 데이터 조회 (24개월 롤링 윈도우)
+ */
+router.get('/api/sales/data', async (ctx) => {
+  try {
+    // 최근 2년 = 24개월 전 월 계산
+    const now = new Date();
+    const twoYearsAgo = new Date(now.getFullYear() - 2, now.getMonth(), 1);
+    const yy = String(twoYearsAgo.getFullYear()).slice(2);
+    const mm = String(twoYearsAgo.getMonth() + 1).padStart(2, '0');
+    const cutoff = `${yy}.${mm}`; // 예: "24.04"
+
+    const rows = await SalesData.findAll({
+      where: {
+        month: { [require('sequelize').Op.gte]: cutoff }
+      },
+      order: [['month', 'ASC'], ['division', 'ASC'], ['team', 'ASC']],
+      raw: true
+    });
+
+    ctx.body = {
+      success: true,
+      data: rows.map(r => ({
+        month: r.month,
+        division: r.division,
+        team: r.team,
+        name: r.name,
+        revenue: Number(r.revenue),
+        headcount: Number(r.headcount)
+      }))
+    };
+  } catch (err) {
+    throwError(ctx, 500, '데이터 조회 실패: ' + err.message);
+  }
 });
 
 app.use(router.routes()).use(router.allowedMethods());

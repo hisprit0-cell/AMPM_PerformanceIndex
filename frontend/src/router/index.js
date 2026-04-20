@@ -26,7 +26,7 @@ const routes = [
       {
         path: 'sales-detail',
         name: 'SalesDetail',
-        component: () => import('../views/SalesDetailView.vue'),
+        component: () => import('../features/detail/SalesDetailView.vue'),
         meta: { requiresAuth: true }
       }
     ]

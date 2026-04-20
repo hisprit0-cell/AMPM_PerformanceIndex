@@ -111,8 +111,8 @@ import GrowthItems from './GrowthItems.vue'
 
 // ── Global Tools
 const timeline = Array(24).fill(0).map((_, i) => {
-  const m = (i % 12 + 7) % 12 || 12
-  const yr = i < 6 ? '22.' : i < 18 ? '23.' : '24.'
+  const m = ((i + 3) % 12) + 1
+  const yr = i < 9 ? '24.' : i < 21 ? '25.' : '26.'
   return yr + String(m).padStart(2, '0')
 })
 const getGR = (arr, type) => {

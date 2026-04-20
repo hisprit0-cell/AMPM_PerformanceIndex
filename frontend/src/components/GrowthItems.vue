@@ -21,18 +21,19 @@
     </div>
 
     <!-- Comparison Metrics Table -->
-    <div class="column justify-between w-100 q-px-sm q-gutter-y-sm">
-      <div class="row justify-between items-center">
-        <span class="text-subtitle1 text-grey-5 text-weight-medium">QoQ</span>
-        <span :class="['text-h6 text-weight-bold', parseFloat(metrics?.qoq) >= 0 ? 'text-positive' : 'text-negative']">{{ metrics?.qoq }}%</span>
+    <!-- Comparison Metrics Table -->
+    <div class="column items-center full-width q-gutter-y-sm" style="padding-top: 8px;">
+      <div class="row items-center justify-center" style="gap: 16px; width: 100%;">
+        <span class="text-subtitle1 text-grey-5 text-weight-bold" style="width: 40px; text-align: left;">QoQ</span>
+        <span :class="['text-h6 text-weight-bold', parseFloat(metrics?.qoq) >= 0 ? 'text-positive' : 'text-negative']" style="width: 70px; text-align: right;">{{ parseFloat(metrics?.qoq) > 0 ? '+' : '' }}{{ metrics?.qoq }}%</span>
       </div>
-      <div class="row justify-between items-center">
-        <span class="text-subtitle1 text-grey-5 text-weight-medium">HoH</span>
-        <span :class="['text-h6 text-weight-bold', parseFloat(metrics?.hoh) >= 0 ? 'text-positive' : 'text-negative']">{{ metrics?.hoh }}%</span>
+      <div class="row items-center justify-center" style="gap: 16px; width: 100%;">
+        <span class="text-subtitle1 text-grey-5 text-weight-bold" style="width: 40px; text-align: left;">HoH</span>
+        <span :class="['text-h6 text-weight-bold', parseFloat(metrics?.hoh) >= 0 ? 'text-positive' : 'text-negative']" style="width: 70px; text-align: right;">{{ parseFloat(metrics?.hoh) > 0 ? '+' : '' }}{{ metrics?.hoh }}%</span>
       </div>
-      <div class="row justify-between items-center">
-        <span class="text-subtitle1 text-grey-5 text-weight-medium">YoY</span>
-        <span :class="['text-h6 text-weight-bold', parseFloat(metrics?.yoy) >= 0 ? 'text-positive' : 'text-negative']">{{ metrics?.yoy }}%</span>
+      <div class="row items-center justify-center" style="gap: 16px; width: 100%;">
+        <span class="text-subtitle1 text-grey-5 text-weight-bold" style="width: 40px; text-align: left;">YoY</span>
+        <span :class="['text-h6 text-weight-bold', parseFloat(metrics?.yoy) >= 0 ? 'text-positive' : 'text-negative']" style="width: 70px; text-align: right;">{{ parseFloat(metrics?.yoy) > 0 ? '+' : '' }}{{ metrics?.yoy }}%</span>
       </div>
     </div>
   </div>
