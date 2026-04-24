@@ -65,29 +65,32 @@ import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { useAuth } from '../store/auth'
-import api from '../api'
 
 const router = useRouter()
 const $q = useQuasar()
-const { setAuth } = useAuth()
+const { login } = useAuth()
 
 const loading = ref(false)
 const loginForm = reactive({ username: '', password: '' })
 
 /**
- * @description 로그인 버튼 클릭 핸들러 (Handle user login via API)
+ * @description 로그인 버튼 클릭 핸들러 (Handle user login via Supabase Auth)
  */
 const handleLogin = async () => {
   if (!loginForm.username || !loginForm.password) return;
   
   loading.value = true
   try {
-    const res = await api.post('/auth/login', loginForm);
-    setAuth(res.data.user, res.data.token);
+    // username을 email로 사용 (username에 @가 없으면 @ampm.co.kr 자동 부여)
+    const email = loginForm.username.includes('@') 
+      ? loginForm.username 
+      : `${loginForm.username}@ampm.co.kr`
+    
+    await login(email, loginForm.password)
     $q.notify({ color: 'positive', message: '로그인 성공! 환영합니다.', icon: 'check_circle' })
     router.push('/')
   } catch (err) {
-    const msg = err.response?.data?.error || '로그인에 실패했습니다. 정보를 확인해주세요.';
+    const msg = err.message || '로그인에 실패했습니다. 정보를 확인해주세요.';
     $q.notify({ color: 'negative', message: msg, icon: 'error' })
   } finally {
     loading.value = false

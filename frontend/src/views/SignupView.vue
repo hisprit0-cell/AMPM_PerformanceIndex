@@ -56,16 +56,17 @@
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
-import api from '../api'
+import { useAuth } from '../store/auth'
 
 const router = useRouter()
 const $q = useQuasar()
+const { signup } = useAuth()
 
 const loading = ref(false)
 const signupForm = reactive({ username: '', email: '', password: '', confirmPassword: '' })
 
 /**
- * @description 회원 가입 신청 처리 (Handle signup request via API)
+ * @description 회원 가입 신청 처리 (Handle signup request via Supabase Auth)
  */
 const handleSignup = async () => {
   if (!signupForm.username || !signupForm.password) return;
@@ -73,13 +74,16 @@ const handleSignup = async () => {
     return $q.notify({ color: 'negative', message: '비밀번호가 일치하지 않습니다.', icon: 'warning' })
   }
   
+  // email이 없으면 username으로 자동 생성
+  const email = signupForm.email || `${signupForm.username}@ampm.co.kr`
+  
   loading.value = true
   try {
-    await api.post('/auth/register', signupForm);
+    await signup(signupForm.username, email, signupForm.password)
     $q.notify({ color: 'info', message: '가입 신청이 완료되었습니다. 관리자의 승인을 기다려주세요.', icon: 'info' })
     router.push('/login')
   } catch (err) {
-    const msg = err.response?.data?.error || '회원가입에 실패했습니다.';
+    const msg = err.message || '회원가입에 실패했습니다.'
     $q.notify({ color: 'negative', message: msg, icon: 'error' })
   } finally {
     loading.value = false

@@ -285,13 +285,34 @@ export function useSalesHarness() {
     return pill.label
   })
 
-  // 5. Backend API 연동 함수
+  // 5. Backend API 연동 함수 (Supabase)
   const fetchFromDB = async () => {
     try {
-      const res = await fetch(`${API_BASE}/api/sales/data`)
-      const json = await res.json()
-      if (json.success && json.data && json.data.length > 0) {
-        parseParsedData(json.data)
+      const { supabase } = await import('../../../lib/supabase')
+      
+      // 최근 2년 = 24개월 전 월 계산
+      const now = new Date()
+      const twoYearsAgo = new Date(now.getFullYear() - 2, now.getMonth(), 1)
+      const yy = String(twoYearsAgo.getFullYear()).slice(2)
+      const mm = String(twoYearsAgo.getMonth() + 1).padStart(2, '0')
+      const cutoff = `${yy}.${mm}`
+
+      const { data, error } = await supabase
+        .from('sales_data')
+        .select('month, division, team, name, revenue, headcount')
+        .gte('month', cutoff)
+        .order('month', { ascending: true })
+
+      if (error) throw error
+      if (data && data.length > 0) {
+        parseParsedData(data.map(r => ({
+          month: r.month,
+          division: r.division,
+          team: r.team,
+          name: r.name,
+          revenue: Number(r.revenue),
+          headcount: Number(r.headcount)
+        })))
         return true
       }
       return false
@@ -303,13 +324,25 @@ export function useSalesHarness() {
 
   const uploadToDB = async (dataArray) => {
     try {
-      const res = await fetch(`${API_BASE}/api/sales/upload`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ data: dataArray })
-      })
-      const json = await res.json()
-      return json
+      const { supabase } = await import('../../../lib/supabase')
+      
+      // upsert: month+division+team+name 기준
+      const { data, error } = await supabase
+        .from('sales_data')
+        .upsert(
+          dataArray.map(row => ({
+            month: String(row.month).trim(),
+            division: String(row.division).trim(),
+            team: String(row.team).trim(),
+            name: row.name ? String(row.name).trim() : null,
+            revenue: Number(row.revenue) || 0,
+            headcount: Number(row.headcount) || 0
+          })),
+          { onConflict: 'month,division,team,name' }
+        )
+
+      if (error) throw error
+      return { success: true, count: dataArray.length }
     } catch (e) {
       console.warn('DB 업로드 실패:', e.message)
       return { success: false }

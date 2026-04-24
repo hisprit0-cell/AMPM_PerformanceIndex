@@ -28,4 +28,11 @@ app.use(Quasar, {
 app.use(router)
 app.use(VueApexCharts)
 
-app.mount('#app')
+/**
+ * 🔄 Supabase 세션 복원 후 앱 마운트
+ */
+import { useAuth } from './store/auth'
+const { restoreSession } = useAuth()
+restoreSession().finally(() => {
+  app.mount('#app')
+})
