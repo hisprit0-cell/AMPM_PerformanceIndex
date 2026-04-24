@@ -52,9 +52,6 @@ const latestMonthLabel = computed(() => {
   return `${mm}월`
 })
 
-// Backend API base URL
-const API_BASE = 'http://localhost:3001'
-
 export function useSalesHarness() {
 
   // CSV 대규모 랜덤 더미데이터 생성 (24.04 ~ 26.03) -> 초기 데이터 연동용
@@ -327,7 +324,7 @@ export function useSalesHarness() {
       const { supabase } = await import('../../../lib/supabase')
       
       // upsert: month+division+team+name 기준
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('sales_data')
         .upsert(
           dataArray.map(row => ({

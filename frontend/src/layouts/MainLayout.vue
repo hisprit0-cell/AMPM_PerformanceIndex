@@ -29,7 +29,7 @@
             <q-btn flat round dense icon="account_circle">
               <q-menu flat class="glass-header">
                 <q-list style="min-width: 150px">
-                  <q-item-label header class="text-neon">안녕하세요, {{ user?.username }}님</q-item-label>
+                  <q-item-label header class="text-neon">안녕하세요, {{ user?.email }}님</q-item-label>
                   <q-separator dark />
                   <q-item clickable v-close-popup v-if="isAdmin" to="/admin">
                     <q-item-section avatar><q-icon name="admin_panel_settings" /></q-item-section>
