@@ -4,18 +4,11 @@ require('dotenv').config();
 /**
  * 🗄️ Sequelize 인스턴스 생성 (MariaDB)
  */
-const sequelize = new Sequelize(
-  process.env.DB_NAME || 'ampm_performance',
-  process.env.DB_USER || 'root',
-  process.env.DB_PASS || '1234',
-  {
-    host: process.env.DB_HOST || '127.0.0.1',
-    port: parseInt(process.env.DB_PORT) || 3306,
-    dialect: 'mysql',
-    logging: false,
-    pool: { max: 10, min: 0, acquire: 30000, idle: 10000 }
-  }
-);
+const sequelize = new Sequelize({
+  dialect: 'sqlite',
+  storage: './database.sqlite',
+  logging: false
+});
 
 // 모델 등록
 const SalesData = require('./SalesData')(sequelize);

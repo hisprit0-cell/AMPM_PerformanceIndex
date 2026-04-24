@@ -6,7 +6,7 @@ import { useAuth } from './store/auth';
  * @description 백엔드 서버와의 비동기 통신 및 토큰 자동 첨부 (Async communication with backend)
  */
 const api = axios.create({
-  baseURL: 'http://localhost:3000/api',
+  baseURL: 'http://localhost:3001/api',
   timeout: 10000
 });
 

@@ -4,7 +4,8 @@
   "description": "Koa backend for Dashboard",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "reset": "node clear_users.js"
   },
   "dependencies": {
     "@koa/cors": "^5.0.0",
@@ -16,6 +17,8 @@
     "koa-body": "^7.0.1",
     "mysql2": "^3.20.0",
     "sequelize": "^6.37.8",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^6.0.1",
     "xlsx": "^0.18.5"
   }
 }

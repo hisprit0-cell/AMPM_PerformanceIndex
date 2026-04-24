@@ -2,65 +2,73 @@
   <div class="section-container" style="margin-top: 48px;">
     <h2 class="section-title">Advertisement Performance (광고 성과)</h2>
 
-    <!-- 상단 파이프라인 (Flowchart) -->
-    <q-card class="glass-card q-pa-lg pipeline-wrapper q-mb-lg" style="overflow:visible;">
-      <div class="pipeline-scroll-area">
-        <div class="pipeline-container">
-          
-          <!-- Node 1: 광고비 (Highlight) -->
-          <KpiPipelineNode title="광고비 (Ad Spend)" :value="formatMoney(sumAdSpend)" color="neon" sub="예산 소진액" class="highlight-node" />
-
-          <!-- Edge 1 -->
-          <KpiPipelineEdge />
-
-          <!-- Node 2: 노출수 -->
-          <KpiPipelineNode title="노출수 (Impressions)" :value="formatNum(sumImpressions)" color="teal" sub="총 노출 건수" />
-
-          <!-- Edge 2: CTR & CPC -->
-          <KpiPipelineEdge :badge="`CTR ${ctr.toFixed(2)}% | CPC ₩${formatNum(cpc)}`" highlight />
-
-          <!-- Node 3: 클릭수 -->
-          <KpiPipelineNode title="클릭수 (Clicks)" :value="formatNum(sumClicks)" color="blue" sub="총 클릭 건수" />
-
-          <!-- Branch to Categories (6 항목) -->
-          <div class="pipeline-branch">
-            <div class="branch-lines-in"></div>
-            <div class="category-nodes">
-              <div class="cat-node">광고 상담: {{ formatNum(catA) }}건</div>
-              <div class="cat-node">하단 상담: {{ formatNum(catB) }}건</div>
-              <div class="cat-node">우측 상담: {{ formatNum(catC) }}건</div>
-              <div class="cat-node">랜딩 상담: {{ formatNum(catD) }}건</div>
-              <div class="cat-node">수기(4111): {{ formatNum(catE) }}건</div>
-              <div class="cat-node">수기(4488): {{ formatNum(catF) }}건</div>
-            </div>
-            <div class="branch-lines-out"></div>
-          </div>
-
-          <!-- Node 4: 총 전환수 -->
-          <KpiPipelineNode title="총 전환수 (Conversions)" :value="formatNum(sumConversions)" color="white" sub="승인된 총 전환" />
-
-          <!-- Edge 4: CVR -->
-          <KpiPipelineEdge :badge="`CVR ${cvr.toFixed(2)}%`" highlight />
-
-          <!-- Node 5: CPA (Highlight) -->
-          <KpiPipelineNode title="CPA (전환당 비용)" :value="formatMoney(cpa)" color="warning" sub="객단가 기준" class="highlight-node highlight-warning" />
-
-          <!-- Edge 5 -->
-          <KpiPipelineEdge />
-
-          <!-- Node 6: 신규 매출액 -->
-          <KpiPipelineNode title="신규 매출액 (Revenue)" :value="formatMoney(sumRevenue)" color="positive" sub="발생한 총 매출" />
-
-          <!-- Edge 6: ROAS -->
-          <KpiPipelineEdge glow />
-
-          <!-- Node 7: ROAS (Highlight Final) -->
-          <div class="node-box node-final bounce-ani highlight-node highlight-roas">
-            <div class="node-title text-uppercase text-weight-bolder" style="color:#00f2ff; letter-spacing:2px; font-size:0.9rem;">Final ROAS</div>
-            <div class="node-value text-white text-weight-bolder" style="font-size: 2.8rem; text-shadow: 0 0 15px rgba(0,242,255,0.8);">{{ formatNum(roas.toFixed(0)) }}%</div>
-          </div>
-
+    <!-- 상단 KPI 요약 그리드 (반응형, 스크롤 없음) -->
+    <q-card class="glass-card q-pa-lg q-mb-lg">
+      <!-- Row 1: 핵심 퍼널 지표 -->
+      <div class="kpi-grid">
+        <div class="kpi-card kpi-highlight-neon">
+          <div class="kpi-label">광고비 (Ad Spend)</div>
+          <div class="kpi-value text-neon">{{ formatMoney(sumAdSpend) }}</div>
+          <div class="kpi-sub">예산 소진액</div>
         </div>
+        <div class="kpi-arrow">→</div>
+        <div class="kpi-card">
+          <div class="kpi-label">노출수 (Impressions)</div>
+          <div class="kpi-value text-teal">{{ formatNum(sumImpressions) }}</div>
+          <div class="kpi-sub">총 노출 건수</div>
+        </div>
+        <div class="kpi-arrow">→</div>
+        <div class="kpi-card">
+          <div class="kpi-label">클릭수 (Clicks)</div>
+          <div class="kpi-value text-blue">{{ formatNum(sumClicks) }}</div>
+          <div class="kpi-sub">총 클릭 건수</div>
+        </div>
+        <div class="kpi-arrow">→</div>
+        <div class="kpi-card">
+          <div class="kpi-label">총 전환수 (Conversions)</div>
+          <div class="kpi-value text-white">{{ formatNum(sumConversions) }}</div>
+          <div class="kpi-sub">승인된 총 전환</div>
+        </div>
+        <div class="kpi-arrow">→</div>
+        <div class="kpi-card">
+          <div class="kpi-label">신규 매출액 (Revenue)</div>
+          <div class="kpi-value text-positive">{{ formatMoney(sumRevenue) }}</div>
+          <div class="kpi-sub">발생한 총 매출</div>
+        </div>
+      </div>
+
+      <!-- Row 2: 효율 지표 배지 -->
+      <div class="efficiency-row q-mt-lg">
+        <div class="eff-badge eff-teal">
+          <span class="eff-label">CTR</span>
+          <span class="eff-value">{{ ctr.toFixed(2) }}%</span>
+        </div>
+        <div class="eff-badge eff-blue">
+          <span class="eff-label">CPC</span>
+          <span class="eff-value">₩{{ formatNum(cpc) }}</span>
+        </div>
+        <div class="eff-badge eff-warning">
+          <span class="eff-label">CVR</span>
+          <span class="eff-value">{{ cvr.toFixed(2) }}%</span>
+        </div>
+        <div class="eff-badge eff-warning">
+          <span class="eff-label">CPA</span>
+          <span class="eff-value">{{ formatMoney(cpa) }}</span>
+        </div>
+        <div class="eff-badge eff-roas">
+          <span class="eff-label">ROAS</span>
+          <span class="eff-value">{{ formatNum(roas.toFixed(0)) }}%</span>
+        </div>
+      </div>
+
+      <!-- Row 3: 전환 카테고리 분류 -->
+      <div class="category-grid q-mt-lg">
+        <div class="cat-node">광고 상담: {{ formatNum(catA) }}건</div>
+        <div class="cat-node">하단 상담: {{ formatNum(catB) }}건</div>
+        <div class="cat-node">우측 상담: {{ formatNum(catC) }}건</div>
+        <div class="cat-node">랜딩 상담: {{ formatNum(catD) }}건</div>
+        <div class="cat-node">수기(4111): {{ formatNum(catE) }}건</div>
+        <div class="cat-node">수기(4488): {{ formatNum(catF) }}건</div>
       </div>
     </q-card>
 
@@ -147,8 +155,6 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import KpiPipelineNode from './KpiPipelineNode.vue'
-import KpiPipelineEdge from './KpiPipelineEdge.vue'
 import GrowthItems from './GrowthItems.vue'
 
 // Global Time Tools
@@ -317,7 +323,7 @@ const cOpts = computed(() => {
     opts.stroke = { curve: 'smooth', width: [0, 0, 4] }
     opts.yaxis = [
       { opposite: true, title: { text: '광고비/매출액', style: { color: '#e879f9' } }, labels: { formatter: v => formatNum(v) } },
-      { opposite: true, show: false, labels: { formatter: v => formatNum(v) } }, // Hidden but applies to 2nd series tooltip
+      { opposite: true, show: false, labels: { formatter: v => formatNum(v) } },
       { opposite: false, title: { text: 'ROAS', style: { color: '#00f2ff' } }, labels: { formatter: v => formatNum(v) } }
     ]
   }
@@ -332,6 +338,104 @@ const cOpts = computed(() => {
 .section-title { color: #ECEFF4; font-size: 1.8rem; font-weight: 900; margin-bottom: 24px; border-left: 5px solid #00f2ff; padding-left: 15px; }
 
 .glass-card { background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(14px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; overflow: hidden; }
+
+/* ── KPI 그리드 (반응형) ── */
+.kpi-grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.kpi-card {
+  flex: 1 1 140px;
+  min-width: 130px;
+  max-width: 220px;
+  background: rgba(20, 25, 40, 0.6);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  padding: 16px 12px;
+  text-align: center;
+  transition: transform 0.2s, border-color 0.2s;
+}
+.kpi-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255,255,255,0.3);
+}
+.kpi-highlight-neon {
+  border-color: rgba(0,242,255,0.5);
+  box-shadow: 0 0 12px rgba(0,242,255,0.25);
+}
+.kpi-label { font-size: 0.75rem; color: #94a3b8; font-weight: 600; margin-bottom: 4px; }
+.kpi-value { font-size: 1.4rem; font-weight: 800; line-height: 1.3; }
+.kpi-sub { font-size: 0.7rem; color: #64748b; margin-top: 2px; }
+
+.kpi-arrow {
+  color: rgba(255,255,255,0.25);
+  font-size: 1.4rem;
+  font-weight: 900;
+  flex: 0 0 auto;
+}
+@media (max-width: 768px) {
+  .kpi-arrow { display: none; }
+}
+
+/* ── 효율 지표 배지 행 ── */
+.efficiency-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+.eff-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 24px;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.eff-label {
+  opacity: 0.7;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+}
+.eff-teal { background: rgba(45,212,191,0.12); border: 1px solid rgba(45,212,191,0.4); color: #2dd4bf; }
+.eff-blue { background: rgba(96,165,250,0.12); border: 1px solid rgba(96,165,250,0.4); color: #60a5fa; }
+.eff-warning { background: rgba(242,192,55,0.12); border: 1px solid rgba(242,192,55,0.4); color: #F2C037; }
+.eff-roas {
+  background: linear-gradient(135deg, rgba(0,242,255,0.15), rgba(168,85,247,0.15));
+  border: 2px solid rgba(0,242,255,0.5);
+  color: #00f2ff;
+  font-size: 1rem;
+  text-shadow: 0 0 10px rgba(0,242,255,0.6);
+  animation: pulseRoas 3s infinite alternate ease-in-out;
+}
+@keyframes pulseRoas {
+  0% { box-shadow: 0 0 6px rgba(0,242,255,0.2); }
+  100% { box-shadow: 0 0 20px rgba(0,242,255,0.5); }
+}
+
+/* ── 카테고리 그리드 ── */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+}
+.cat-node {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.15);
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: #cbd5e1;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-align: center;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
 
 /* Filter Tabs */
 .team-filter-ext { display: flex; flex-wrap: wrap; gap: 8px; padding: 8px; background: rgba(0,0,0,0.2); border-radius: 12px; }
@@ -354,68 +458,4 @@ const cOpts = computed(() => {
 .metric-neon { color: #00f2ff; background: rgba(0, 242, 255, 0.12); border: 1px solid rgba(0, 242, 255, 0.35); text-shadow: 0 0 8px rgba(0,242,255,0.4); }
 
 :deep(.text-h3) { font-size: 2rem !important; letter-spacing: -1px; }
-
-/* ── Flowchart CSS ── */
-.pipeline-scroll-area { 
-  overflow-x: auto; 
-  padding: 24px 10px 48px; /* space for overflow badges */
-}
-.pipeline-scroll-area::-webkit-scrollbar { height: 8px; }
-.pipeline-scroll-area::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
-.pipeline-scroll-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
-
-.pipeline-container { display: flex; align-items: center; justify-content: space-between; min-width: 1400px; gap: 8px; }
-
-/* Highlight Node Override for generic PipelineNode */
-:deep(.node-box) { transition: all 0.3s ease; }
-:deep(.highlight-node) {
-  border: 2px solid #00f2ff;
-  box-shadow: 0 0 15px rgba(0, 242, 255, 0.4);
-  background: rgba(20, 25, 40, 0.8) !important;
-  transform: scale(1.05);
-}
-:deep(.highlight-node .node-value) { color: #00f2ff !important; text-shadow: 0 0 10px rgba(0,242,255,0.8); }
-
-:deep(.highlight-warning) {
-  border: 2px solid #F2C037;
-  box-shadow: 0 0 15px rgba(242, 192, 55, 0.4);
-}
-:deep(.highlight-warning .node-value) { color: #F2C037 !important; text-shadow: 0 0 10px rgba(242, 192, 55, 0.8); }
-
-:deep(.node-final) {
-  flex: 0 0 auto;
-  min-width: 150px;
-  background: rgba(20, 25, 40, 0.6);
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 12px;
-  padding: 20px 16px;
-  text-align: center;
-  position: relative;
-  z-index: 2;
-}
-:deep(.highlight-roas) {
-  background: linear-gradient(135deg, rgba(0,242,255,0.15), rgba(168,85,247,0.15)) !important;
-  border: 2px solid rgba(0,242,255,0.6);
-  min-width: 200px;
-}
-.bounce-ani { animation: bounceGlow 3s infinite alternate ease-in-out; }
-@keyframes bounceGlow {
-  0% { box-shadow: 0 0 10px rgba(0,242,255,0.2); transform: scale(1); }
-  100% { box-shadow: 0 0 30px rgba(0,242,255,0.6); transform: scale(1.08); }
-}
-
-/* Branching logic for categories */
-.pipeline-branch { display: flex; align-items: center; flex: 0 0 auto; position: relative; gap: 12px; }
-.category-nodes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; z-index: 2; }
-.cat-node {
-  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2);
-  padding: 8px 12px; border-radius: 6px; color: #cbd5e1; font-weight: 600; font-size: 0.8rem;
-  text-align: center; width: 140px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;
-}
-
-.branch-lines-in, .branch-lines-out { width: 40px; height: 100px; position: relative; }
-.branch-lines-in::before, .branch-lines-out::before {
-  content: ''; position: absolute; top: 50%; width: 100%; height: 2px;
-  background: rgba(255,255,255,0.15); transform: translateY(-50%);
-}
 </style>

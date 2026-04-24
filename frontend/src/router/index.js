@@ -24,9 +24,39 @@ const routes = [
         meta: { requiresAuth: true, requiresAdmin: true }
       },
       {
-        path: 'sales-detail',
-        name: 'SalesDetail',
+        path: 'salesteam',
+        name: 'SalesTeam',
         component: () => import('../features/detail/SalesDetailView.vue'),
+        meta: { requiresAuth: true }
+      },
+      {
+        path: 'adsteam',
+        name: 'AdsTeam',
+        component: () => import('../views/AdsTeamView.vue'),
+        meta: { requiresAuth: true }
+      },
+      {
+        path: 'devteam',
+        name: 'DevTeam',
+        component: () => import('../views/DevTeamView.vue'),
+        meta: { requiresAuth: true }
+      },
+      {
+        path: 'videoteam',
+        name: 'VideoTeam',
+        component: () => import('../views/VideoTeamView.vue'),
+        meta: { requiresAuth: true }
+      },
+      {
+        path: 'hrteam',
+        name: 'HrTeam',
+        component: () => import('../views/HrTeamView.vue'),
+        meta: { requiresAuth: true }
+      },
+      {
+        path: 'accountingteam',
+        name: 'AccountingTeam',
+        component: () => import('../views/AccountingTeamView.vue'),
         meta: { requiresAuth: true }
       }
     ]
