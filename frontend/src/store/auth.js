@@ -1,45 +1,59 @@
 import { reactive, computed } from 'vue'
 import { supabase } from '../lib/supabase'
 
+/**
+ * 🔐 인증 스토어 (Supabase Auth 기반)
+ * - signUp 시 profile 은 DB 트리거(handle_new_user)가 자동 생성
+ * - 클라이언트는 auth 호출만 담당
+ */
 const state = reactive({
-  user: JSON.parse(localStorage.getItem('user')) || null,
-  session: null
+  user: JSON.parse(localStorage.getItem('user') || 'null'),
+  session: null,
+  ready: false
 })
 
 /**
- * 🔐 인증 상태 관리 (Authentication Store - Supabase)
- * @description Supabase Auth 기반 로그인/회원가입/세션 관리
+ * 📌 profile 조회 후 사용자 객체 구성 (공통 헬퍼)
  */
+const loadProfile = async (authUser) => {
+  const { data: profile, error } = await supabase
+    .from('profiles')
+    .select('username, role, status')
+    .eq('id', authUser.id)
+    .maybeSingle()
+
+  if (error) throw error
+  return {
+    id: authUser.id,
+    email: authUser.email,
+    username: profile?.username || authUser.email,
+    role: profile?.role || 'user',
+    status: profile?.status || 'pending'
+  }
+}
+
 export const useAuth = () => {
   const isLoggedIn = computed(() => !!state.user)
-  const isAdmin = computed(() => state.user?.role === 'master')
-  const user = computed(() => state.user)
-  const token = computed(() => state.session?.access_token || null)
+  const isAdmin    = computed(() => state.user?.role === 'master')
+  const user       = computed(() => state.user)
+  const token      = computed(() => state.session?.access_token || null)
 
   /**
-   * 🔑 로그인 처리 (Supabase Auth)
+   * 🔑 로그인 — 이메일/비밀번호 인증 후 profile 상태 확인
    */
   const login = async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) throw error
+    if (error) throw new Error(error.message || '아이디 또는 비밀번호가 올바르지 않습니다.')
 
-    // profiles 테이블에서 역할 정보 가져오기
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('username, role, status')
-      .eq('id', data.user.id)
-      .single()
+    const userData = await loadProfile(data.user)
 
-    if (profile && profile.status !== 'approved') {
+    if (userData.status === 'blocked') {
+      await supabase.auth.signOut()
+      throw new Error('차단된 계정입니다. 관리자에게 문의하세요.')
+    }
+    if (userData.status !== 'approved') {
       await supabase.auth.signOut()
       throw new Error('관리자의 승인을 기다려주세요.')
-    }
-
-    const userData = {
-      id: data.user.id,
-      username: profile?.username || data.user.email,
-      email: data.user.email,
-      role: profile?.role || 'user'
     }
 
     state.user = userData
@@ -49,43 +63,24 @@ export const useAuth = () => {
   }
 
   /**
-   * 📝 회원가입 처리 (Supabase Auth + profiles 테이블)
+   * 📝 회원가입 — username 을 메타데이터로 전달, profile 은 DB 트리거가 생성
    */
   const signup = async (username, email, password) => {
-    const { data, error } = await supabase.auth.signUp({ email, password })
-    if (error) throw error
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { username } }
+    })
+    if (error) throw new Error(error.message || '회원가입에 실패했습니다.')
 
-    // profiles 테이블에 사용자 정보 저장
-    if (data.user) {
-      // 첫 번째 사용자인지 확인
-      const { count } = await supabase
-        .from('profiles')
-        .select('*', { count: 'exact', head: true })
-
-      const role = count === 0 ? 'master' : 'user'
-      const status = count === 0 ? 'approved' : 'pending'
-
-      await supabase.from('profiles').insert({
-        id: data.user.id,
-        username,
-        role,
-        status
-      })
-    }
+    // 이메일 확인이 꺼져 있으면 세션이 즉시 생성됨 → 자동 로그아웃해서 승인 대기 상태 유지
+    if (data.session) await supabase.auth.signOut()
 
     return data
   }
 
   /**
-   * 🔑 기존 방식 호환용 setAuth (로컬 스토리지에 직접 저장)
-   */
-  const setAuth = (userData, tokenData) => {
-    state.user = userData;
-    localStorage.setItem('user', JSON.stringify(userData));
-  }
-
-  /**
-   * 🚪 로그아웃 처리 (Supabase Auth)
+   * 🚪 로그아웃
    */
   const logout = async () => {
     await supabase.auth.signOut()
@@ -95,25 +90,26 @@ export const useAuth = () => {
   }
 
   /**
-   * 🔄 세션 복원 (앱 시작 시 호출)
+   * 🔄 세션 복원 — 앱 시작 시 1회 호출
    */
   const restoreSession = async () => {
-    const { data: { session } } = await supabase.auth.getSession()
-    if (session) {
-      state.session = session
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('username, role, status')
-        .eq('id', session.user.id)
-        .single()
-
-      state.user = {
-        id: session.user.id,
-        username: profile?.username || session.user.email,
-        email: session.user.email,
-        role: profile?.role || 'user'
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) return
+      const userData = await loadProfile(session.user)
+      if (userData.status !== 'approved') {
+        await supabase.auth.signOut()
+        state.user = null
+        localStorage.removeItem('user')
+        return
       }
-      localStorage.setItem('user', JSON.stringify(state.user))
+      state.session = session
+      state.user = userData
+      localStorage.setItem('user', JSON.stringify(userData))
+    } catch (e) {
+      console.error('[auth] restoreSession 실패', e)
+    } finally {
+      state.ready = true
     }
   }
 
@@ -124,7 +120,6 @@ export const useAuth = () => {
     token,
     login,
     signup,
-    setAuth,
     logout,
     restoreSession
   }

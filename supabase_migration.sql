@@ -1,6 +1,6 @@
 -- ============================================
--- AMPM Performance Index - Supabase 테이블 생성
--- Supabase Dashboard > SQL Editor 에서 실행
+-- AMPM Performance Index - Supabase 스키마 (재실행 가능)
+-- Supabase Dashboard > SQL Editor 에서 전체 복사 후 Run
 -- ============================================
 
 -- 1. 프로필 테이블 (인증 사용자 확장 정보)
@@ -26,23 +26,30 @@ CREATE TABLE IF NOT EXISTS sales_data (
   UNIQUE(month, division, team, name)
 );
 
--- 3. RLS (Row Level Security) 설정
+-- 3. RLS 활성화 (이미 켜져 있어도 안전)
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE sales_data ENABLE ROW LEVEL SECURITY;
 
--- 4. profiles 정책: 인증된 사용자가 자신의 프로필 읽기 가능
-CREATE POLICY "Users can read own profile" ON profiles
-  FOR SELECT TO authenticated USING (auth.uid() = id);
+-- 4. profiles 정책 — 기존 정책 제거 후 재생성 (idempotent)
+DROP POLICY IF EXISTS "Users can read own profile" ON profiles;
+DROP POLICY IF EXISTS "Users can insert own profile" ON profiles;
+DROP POLICY IF EXISTS "Authenticated can read all profiles" ON profiles;
+DROP POLICY IF EXISTS "Users can update own profile" ON profiles;
 
--- profiles 정책: 인증된 사용자가 프로필 삽입 가능
-CREATE POLICY "Users can insert own profile" ON profiles
-  FOR INSERT TO authenticated WITH CHECK (auth.uid() = id);
-
--- profiles 정책: 모든 인증된 사용자가 profiles 읽기 가능 (관리자 페이지용)
 CREATE POLICY "Authenticated can read all profiles" ON profiles
   FOR SELECT TO authenticated USING (true);
 
--- 5. sales_data 정책: 인증된 사용자 읽기/쓰기 가능
+CREATE POLICY "Users can insert own profile" ON profiles
+  FOR INSERT TO authenticated WITH CHECK (auth.uid() = id);
+
+CREATE POLICY "Users can update own profile" ON profiles
+  FOR UPDATE TO authenticated USING (auth.uid() = id);
+
+-- 5. sales_data 정책 — 재실행 가능
+DROP POLICY IF EXISTS "Authenticated can read sales_data" ON sales_data;
+DROP POLICY IF EXISTS "Authenticated can insert sales_data" ON sales_data;
+DROP POLICY IF EXISTS "Authenticated can update sales_data" ON sales_data;
+
 CREATE POLICY "Authenticated can read sales_data" ON sales_data
   FOR SELECT TO authenticated USING (true);
 
@@ -55,3 +62,53 @@ CREATE POLICY "Authenticated can update sales_data" ON sales_data
 -- 6. 인덱스
 CREATE INDEX IF NOT EXISTS idx_sales_month ON sales_data (month);
 CREATE INDEX IF NOT EXISTS idx_sales_division ON sales_data (division);
+
+-- ============================================
+-- 7. 가입 시 profile 자동 생성 트리거
+--    - RLS 우회 (SECURITY DEFINER) 로 세션 없이도 동작
+--    - 첫 가입자 → master/approved, 그 외 → user/pending
+--    - username 은 signUp 시 options.data.username 으로 전달
+-- ============================================
+
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_username TEXT;
+  v_count    INT;
+  v_role     TEXT;
+  v_status   TEXT;
+BEGIN
+  -- username 은 메타데이터에서, 없으면 이메일 로컬파트 사용
+  v_username := COALESCE(
+    NEW.raw_user_meta_data->>'username',
+    split_part(NEW.email, '@', 1)
+  );
+
+  -- username 충돌 시 uid 접미사 부여 (회원가입 자체가 실패하지 않도록)
+  IF EXISTS (SELECT 1 FROM public.profiles WHERE username = v_username) THEN
+    v_username := v_username || '_' || substr(NEW.id::text, 1, 8);
+  END IF;
+
+  SELECT COUNT(*) INTO v_count FROM public.profiles;
+  IF v_count = 0 THEN
+    v_role := 'master'; v_status := 'approved';
+  ELSE
+    v_role := 'user';   v_status := 'pending';
+  END IF;
+
+  INSERT INTO public.profiles (id, username, role, status)
+  VALUES (NEW.id, v_username, v_role, v_status);
+
+  RETURN NEW;
+END;
+$$;
+
+-- 트리거 재등록 (재실행 안전)
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
