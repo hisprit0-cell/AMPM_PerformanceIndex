@@ -1,11 +1,25 @@
 <template>
   <q-page class="q-pa-xl dashboard-page">
     <!-- Loading -->
-    <div v-if="!allReady" class="flex flex-center" style="min-height: 80vh">
-      <q-spinner-dots color="primary" size="4em" />
+    <div v-if="!allReady" class="flex flex-center column" style="min-height: 80vh">
+      <q-spinner-dots color="cyan" size="4em" />
+      <div class="q-mt-md text-grey-5">대시보드를 불러오는 중...</div>
     </div>
 
     <div v-else class="dashboard-content">
+
+      <!-- 🏠 대시보드 히어로 헤더 -->
+      <div class="dash-hero q-mb-xl">
+        <div>
+          <div class="dash-eyebrow">ENTERPRISE PERFORMANCE</div>
+          <h1 class="dash-title q-ma-none">전체 통합 대시보드</h1>
+          <p class="dash-sub q-ma-none">전 부서의 핵심 성과 지표를 한눈에. 각 섹션의 <span class="text-neon">상세보기</span>로 팀별 분석에 진입하세요.</p>
+        </div>
+        <div class="dash-status">
+          <q-icon name="bolt" color="cyan" size="18px" class="q-mr-xs" />
+          <span>최근 24개월 기준</span>
+        </div>
+      </div>
 
       <!-- ═══════════════════════════════════════
            1. 영업팀 (Sales Team) - Harness Engineering
@@ -91,7 +105,45 @@ onMounted(() => {
 
 <style scoped>
 /* ── Base ── */
-.dashboard-page { background: #0f172a; color: #f8fafc; }
+.dashboard-page { background: #0b1220; color: #f8fafc; }
+
+/* ── Hero Header ── */
+.dash-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.dash-eyebrow {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 3px;
+  color: #00f2ff;
+  margin-bottom: 6px;
+}
+.dash-title {
+  font-size: 2.3rem;
+  font-weight: 900;
+  letter-spacing: -1.2px;
+  color: #f1f5f9;
+  line-height: 1.1;
+}
+.dash-sub { color: #94a3b8; margin-top: 8px; font-size: 0.95rem; }
+.dash-status {
+  display: flex; align-items: center;
+  font-size: 0.8rem; font-weight: 600;
+  color: #cbd5e1;
+  background: rgba(0, 242, 255, 0.08);
+  border: 1px solid rgba(0, 242, 255, 0.25);
+  padding: 8px 14px;
+  border-radius: 999px;
+}
+@media (max-width: 600px) {
+  .dash-title { font-size: 1.7rem; }
+}
 
 .section-container { margin-bottom: 72px; animation: fadeIn 0.7s ease-out; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }

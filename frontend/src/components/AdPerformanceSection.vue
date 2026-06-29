@@ -79,6 +79,7 @@
         <q-card class="glass-card q-pa-md" style="flex:1;">
           <div class="row justify-between items-center q-mb-sm">
             <div class="text-h6 text-weight-bold">월별 광고성과 추이</div>
+            <router-link to="/adsteam" class="detail-link">상세보기<q-icon name="arrow_forward" size="15px" class="q-ml-xs" /></router-link>
           </div>
           <div class="team-filter-ext q-mb-md">
             <div

@@ -63,8 +63,8 @@
     <q-page-container>
       <!-- 🔄 라우터 뷰: 페이지별 콘텐츠가 표시됨 (Router view container) -->
       <router-view v-slot="{ Component }">
-        <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
-          <component :is="Component" />
+        <transition name="page-fade" mode="out-in" appear>
+          <component :is="Component" :key="route.path" />
         </transition>
       </router-view>
     </q-page-container>

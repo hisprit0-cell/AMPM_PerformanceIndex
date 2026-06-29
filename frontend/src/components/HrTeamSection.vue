@@ -6,7 +6,10 @@
       <!-- 1. 좌측 도표 (월간 임직원 통합 지표 추이) -->
       <div class="col-12 col-md-7 column">
         <q-card class="glass-card q-pa-md col-grow column">
-          <div class="text-h6 q-mb-md text-weight-bold">월간 임직원 통합 지표 추이</div>
+          <div class="row justify-between items-center q-mb-md">
+            <div class="text-h6 text-weight-bold">월간 임직원 통합 지표 추이</div>
+            <router-link to="/hrteam" class="detail-link">상세보기<q-icon name="arrow_forward" size="15px" class="q-ml-xs" /></router-link>
+          </div>
           <div style="flex:1; min-height: 400px;">
             <apexchart type="line" height="100%" :options="cOpts" :series="cSers" />
           </div>

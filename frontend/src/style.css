@@ -1,8 +1,40 @@
+/* ============================================================
+   AMPM Performance Index — 전역 디자인 시스템 (Design Tokens)
+   단일 진실 공급원: 색·간격·그림자·타이포를 여기서 통일 관리
+   ============================================================ */
 :root {
-  --primary: #1976D2;
-  --bg-color: #050A15;
-  --text-primary: #ECEFF4;
+  /* Brand & Accent */
+  --primary:        #1976D2;
+  --neon:           #00f2ff;       /* 핵심 액센트 (절제해서 사용) */
+  --neon-soft:      rgba(0, 242, 255, 0.4);
+
+  /* Surfaces (다크) */
+  --bg-color:       #0b1220;       /* 페이지 배경 */
+  --surface:        rgba(30, 41, 59, 0.55);
+  --surface-strong: rgba(20, 25, 40, 0.7);
+  --border-soft:    rgba(255, 255, 255, 0.10);
+  --border-hover:   rgba(0, 242, 255, 0.45);
+
+  /* Text (대비 강화: 본문 가독성 ↑) */
+  --text-primary:   #f1f5f9;       /* 본문 기본 */
+  --text-secondary: #cbd5e1;       /* 보조 텍스트 */
+  --text-muted:     #94a3b8;       /* 라벨/캡션 */
+
+  /* Semantic */
+  --positive:       #4ade80;
+  --negative:       #f87171;
+  --warning:        #fbbf24;
+
+  /* Shape & Motion */
+  --radius:         16px;
+  --radius-sm:      12px;
+  --shadow-card:    0 4px 24px rgba(0, 0, 0, 0.45);
+  --ease:           0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
 
 body {
   margin: 0;
@@ -10,46 +42,108 @@ body {
   background-color: var(--bg-color);
   color: var(--text-primary);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
   overflow-x: hidden;
 }
 
-/* Glassmorphism Card Style */
+/* ── 가시성 개선: 흐린 회색 유틸 텍스트를 한 단계 밝게 (앱 전역 적용) ── */
+.body--dark .text-grey-4 { color: #cbd5e1 !important; }
+.body--dark .text-grey-5 { color: #a9b6c8 !important; }
+.body--dark .text-grey-6 { color: #94a3b8 !important; }
+
+/* ── 선택/포커스 ── */
+::selection { background: rgba(0, 242, 255, 0.28); color: #fff; }
+
+/* ── 커스텀 스크롤바 (전역) ── */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.35);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(0, 242, 255, 0.45); background-clip: content-box; }
+
+/* ============================================================
+   공통 컴포넌트 클래스 (컴포넌트가 별도 정의하지 않으면 상속)
+   ============================================================ */
+
+/* Glassmorphism Card */
 .glass-card {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+  background: var(--surface);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
   color: #fff;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: border-color var(--ease), transform var(--ease), box-shadow var(--ease);
 }
-
 .glass-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 30px rgba(255, 255, 255, 0.1);
+  border-color: var(--border-hover);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
-
-/* Anti-gravity specific */
+/* 물리효과(중력 낙하) 활성 시 hover 비활성화 */
 .glass-card.physics-active {
   position: absolute;
   z-index: 1000;
-  /* Hover effect disabled when falling */
   transition: none;
   cursor: grab;
 }
 
-/* Typography styles */
+/* Neon 텍스트 (절제) */
 .text-neon {
-  color: #00E5FF;
-  text-shadow: 0 0 8px rgba(0, 229, 255, 0.6), 0 0 16px rgba(0, 229, 255, 0.4);
+  color: var(--neon);
+  text-shadow: 0 0 10px rgba(0, 229, 255, 0.45);
 }
 
+/* 섹션 제목 */
 .section-title {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-  background: linear-gradient(90deg, #fff, #8892b0);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-size: 1.8rem;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  color: var(--text-primary);
+  margin-bottom: 24px;
+  border-left: 5px solid var(--neon);
+  padding-left: 15px;
 }
+
+/* ── 일관된 "상세보기 →" 링크 (모든 섹션 공통) ── */
+.detail-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--neon);
+  text-decoration: none;
+  background: rgba(0, 242, 255, 0.10);
+  border: 1px solid rgba(0, 242, 255, 0.28);
+  white-space: nowrap;
+  transition: all var(--ease);
+}
+.detail-link:hover {
+  background: var(--neon);
+  color: #04141a;
+  box-shadow: 0 0 14px rgba(0, 242, 255, 0.5);
+  transform: translateX(2px);
+}
+.detail-link .q-icon { transition: transform var(--ease); }
+.detail-link:hover .q-icon { transform: translateX(3px); }
+
+/* 페이지 진입 공통 애니메이션 */
+.section-container { margin-bottom: 72px; animation: fadeInUp 0.6s ease-out both; }
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* 라우트 전환용 부드러운 슬라이드 페이드 */
+.page-fade-enter-active, .page-fade-leave-active { transition: opacity 0.28s ease, transform 0.28s ease; }
+.page-fade-enter-from { opacity: 0; transform: translateY(10px); }
+.page-fade-leave-to   { opacity: 0; transform: translateY(-6px); }

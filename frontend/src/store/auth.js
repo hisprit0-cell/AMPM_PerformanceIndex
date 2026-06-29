@@ -10,7 +10,10 @@ import { supabase } from '../lib/supabase'
 const state = reactive({
   user:    JSON.parse(localStorage.getItem('user') || 'null'),
   session: null,
-  ready:   false
+  ready:   false,
+  // OAuth 리다이렉트 복귀 시 승인 상태(pending/blocked) 등으로 거부되면
+  // 여기에 메시지를 담아 로그인 화면이 사용자에게 안내하도록 함.
+  authMessage: null
 })
 
 /**
@@ -111,11 +114,23 @@ export const useAuth = () => {
       if (!session) return
       await finalizeSession(session.user, session)
     } catch (e) {
+      // 승인 대기/차단 등으로 거부된 경우 로그인 화면에 안내 메시지 전달.
+      // (특히 Google OAuth 복귀 시 조용히 튕기는 문제 방지)
       console.error('[auth] restoreSession 실패', e)
+      state.authMessage = e?.message || '로그인할 수 없습니다.'
       clearPersist()
     } finally {
       state.ready = true
     }
+  }
+
+  /**
+   * 저장된 인증 안내 메시지를 1회 읽고 비움 (로그인 화면에서 사용)
+   */
+  const consumeAuthMessage = () => {
+    const msg = state.authMessage
+    state.authMessage = null
+    return msg
   }
 
   /**
@@ -149,6 +164,7 @@ export const useAuth = () => {
     signup,
     loginWithGoogle,
     logout,
-    restoreSession
+    restoreSession,
+    consumeAuthMessage
   }
 }

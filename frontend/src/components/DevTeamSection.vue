@@ -10,7 +10,7 @@
         <q-card class="glass-card q-pa-md" style="width:100%; height:100%; display:flex; flex-direction:column;">
           <div class="row justify-between items-center q-mb-sm">
             <div class="text-h6 text-weight-bold">도메인별 트래픽 (PV/UV)</div>
-            <a href="#" class="detail-link">상세보기 ✏️</a>
+            <router-link to="/devteam" class="detail-link">상세보기<q-icon name="arrow_forward" size="15px" class="q-ml-xs" /></router-link>
           </div>
 
           <!-- team-filter-ext 클래스를 추가해 무조건 줄바꿈 되도록 설정 -->
@@ -188,8 +188,7 @@ onMounted(() => {
 .border-r  { border-right: 1px solid rgba(255,255,255,0.1); }
 .text-neon { color: #00f2ff; text-shadow: 0 0 10px rgba(0,242,255,0.5); }
 .text-info { color: #00E5FF; }
-.detail-link { color: #00f2ff; text-decoration: none; font-weight: 700; font-size: 14px; transition: opacity 0.2s; }
-.detail-link:hover { opacity: 0.65; }
+/* .detail-link 는 전역 style.css 의 통일 스타일 사용 */
 .metric-col-header { text-align: center; font-weight: 800; font-size: 0.9rem; padding: 5px 0; border-radius: 6px; letter-spacing: 0.5px; }
 .metric-neon { color: #00f2ff; background: rgba(0, 242, 255, 0.12); border: 1px solid rgba(0, 242, 255, 0.35); text-shadow: 0 0 8px rgba(0,242,255,0.6); }
 .metric-info { color: #60a5fa; background: rgba(96, 165, 250, 0.12); border: 1px solid rgba(96, 165, 250, 0.35); text-shadow: 0 0 8px rgba(96,165,250,0.4); }

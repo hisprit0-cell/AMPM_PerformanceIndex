@@ -85,18 +85,26 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { useAuth } from '../store/auth'
 
 const router = useRouter()
 const $q = useQuasar()
-const { login, loginWithGoogle } = useAuth()
+const { login, loginWithGoogle, consumeAuthMessage } = useAuth()
 
 const loading = ref(false)
 const googleLoading = ref(false)
 const form = reactive({ email: '', password: '' })
+
+/**
+ * OAuth 복귀 등으로 인증이 거부된 경우(승인 대기/차단) 안내 표시
+ */
+onMounted(() => {
+  const msg = consumeAuthMessage()
+  if (msg) $q.notify({ color: 'warning', message: msg, icon: 'info', timeout: 5000 })
+})
 
 /**
  * 📧 이메일/비밀번호 로그인

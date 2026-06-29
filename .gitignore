@@ -3,3 +3,6 @@ nul
 backend/nul
 frontend/nul
 *.log
+
+# 민감 정보 (구글 Client Secret 등 임시 메모)
+Temporary.txt

@@ -75,7 +75,11 @@ const routes = [
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
+  // 페이지 이동 시 항상 상단으로 (뒤로가기는 이전 위치 복원)
+  scrollBehavior(to, from, savedPosition) {
+    return savedPosition || { top: 0, behavior: 'smooth' }
+  }
 })
 
 /**

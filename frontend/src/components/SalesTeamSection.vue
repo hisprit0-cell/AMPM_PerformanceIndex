@@ -9,7 +9,7 @@
         <q-card class="glass-card q-pa-lg" style="width:100%; height:auto;">
           <div class="row justify-between items-center q-mb-md">
             <div class="text-h6 text-weight-bolder text-white">월간 매출 및 인원 추이 ({{ periodLabel }})</div>
-            <router-link to="/sales-detail" class="detail-link text-neon text-weight-bold" style="text-decoration: none;">상세보기 ✏️</router-link>
+            <router-link to="/salesteam" class="detail-link">상세보기<q-icon name="arrow_forward" size="15px" class="q-ml-xs" /></router-link>
           </div>
           
           <div class="team-filter-container q-mb-lg">
@@ -183,7 +183,5 @@ onMounted(async () => {
 .pill-team.active     { background: white; color: #1e293b; }
 .border-r  { border-right: 1px solid rgba(255,255,255,0.1); }
 .text-neon { color: #00f2ff; text-shadow: 0 0 10px rgba(0,242,255,0.5); }
-.detail-link { color: #00f2ff; text-decoration: none; font-weight: 700; font-size: 14px; transition: opacity 0.2s; }
-.detail-link:hover { opacity: 0.65; }
-.detail-link:hover { opacity: 0.65; }
+/* .detail-link 는 전역 style.css 의 통일 스타일 사용 */
 </style>
