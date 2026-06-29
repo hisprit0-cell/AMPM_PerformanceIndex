@@ -1,0 +1,13 @@
+{
+  "name": "supabase-keep-alive",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Supabase 무료 플랜 자동 일시중지 방지용 keep-alive ping",
+  "type": "module",
+  "scripts": {
+    "ping": "node ping.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.104.1"
+  }
+}
