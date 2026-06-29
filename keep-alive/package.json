@@ -8,6 +8,7 @@
     "ping": "node ping.js"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.104.1"
+    "@supabase/supabase-js": "^2.104.1",
+    "ws": "^8.18.0"
   }
 }

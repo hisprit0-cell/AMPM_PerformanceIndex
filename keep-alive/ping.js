@@ -9,6 +9,7 @@
  * 실패 시 process.exit(1) 로 종료 → GitHub Actions 가 실패로 표시.
  */
 import { createClient } from '@supabase/supabase-js'
+import ws from 'ws'
 
 const url = process.env.SUPABASE_URL
 const key = process.env.SUPABASE_KEY
@@ -18,8 +19,13 @@ if (!url || !key) {
   process.exit(1)
 }
 
-// 서버 환경: 세션 영속화 불필요
-const supabase = createClient(url, key, { auth: { persistSession: false } })
+// 서버 환경: 세션 영속화 불필요.
+// Node < 22 는 내장 WebSocket 이 없어 supabase-js 의 realtime 초기화가 실패하므로
+// ws 패키지를 transport 로 주입해 어떤 Node 버전에서도 동작하도록 한다.
+const supabase = createClient(url, key, {
+  auth: { persistSession: false },
+  realtime: { transport: ws }
+})
 
 async function main() {
   console.log(`▶ keep-alive 시작: ${new Date().toISOString()}`)
